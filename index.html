@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>白光工具箱</title>
+<meta name="theme-color" content="#F5F6F4">
+<!-- 讓「加入主畫面」後像 App 一樣全螢幕開啟 -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="白光工具箱">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* —— 白光：乾淨的日光白，不是奶油色 —— */
+    --paper:#F5F6F4;
+    --card:#FFFFFF;
+    --ink:#191A1C;
+    --ink-soft:#4B4D50;
+    --muted:#8B8D8A;
+    --line:#E6E7E3;
+    /* —— 稜鏡分光：三個工具各自一個色相（暖→冷）—— */
+    --c-order:#E39A2B;   /* 進貨 · 琥珀 */
+    --c-brew:#DC5B3B;    /* 調煮 · 烘焙紅 */
+    --c-stock:#1FA98A;   /* 進銷存 · 青綠 */
+    --serif:"Noto Serif TC",serif;
+    --sans:"Noto Sans TC",system-ui,-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;
+    line-height:1.5;
+    padding:
+      calc(env(safe-area-inset-top) + 34px)
+      20px
+      calc(env(safe-area-inset-bottom) + 40px);
+    display:flex;
+    justify-content:center;
+  }
+  .wrap{width:100%;max-width:480px}
+
+  /* ---------- 標頭 ---------- */
+  header{margin-bottom:26px}
+  .eyebrow{
+    font-size:12px;font-weight:500;letter-spacing:.22em;
+    color:var(--muted);text-transform:uppercase;margin:0 0 10px;
+  }
+  h1{
+    font-family:var(--serif);font-weight:700;
+    font-size:40px;line-height:1.05;letter-spacing:.01em;
+    margin:0;color:var(--ink);
+  }
+  .tagline{margin:12px 0 0;font-size:15px;color:var(--ink-soft)}
+  /* 稜鏡光譜：這頁的記憶點 */
+  .spectrum{
+    height:4px;border-radius:99px;margin-top:20px;transform-origin:left center;
+    background:linear-gradient(90deg,var(--c-order) 0%,var(--c-brew) 52%,var(--c-stock) 100%);
+  }
+
+  /* ---------- 工具卡 ---------- */
+  .tools{display:flex;flex-direction:column;gap:14px;margin-top:26px}
+  .tool{
+    --hue:var(--muted);
+    display:flex;align-items:center;gap:16px;
+    background:var(--card);border:1px solid var(--line);border-radius:18px;
+    padding:18px 18px 18px 20px;min-height:80px;
+    text-decoration:none;color:inherit;position:relative;overflow:hidden;
+    transition:transform .12s ease, box-shadow .18s ease, border-color .18s ease;
+  }
+  .tool::before{ /* 左側色脊：三張並排就是一條光譜 */
+    content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--hue);
+  }
+  .tool:active{transform:scale(.985)}
+  @media (hover:hover){
+    .tool:hover{box-shadow:0 8px 24px rgba(25,26,28,.08);border-color:color-mix(in srgb,var(--hue) 45%,var(--line))}
+  }
+  .tool:focus-visible{outline:2.5px solid var(--hue);outline-offset:3px}
+
+  .ico{
+    flex:0 0 auto;width:46px;height:46px;border-radius:13px;
+    display:grid;place-items:center;
+    background:color-mix(in srgb,var(--hue) 14%,#fff);
+    color:var(--hue);
+  }
+  .ico svg{width:24px;height:24px;display:block}
+
+  .body{flex:1;min-width:0}
+  .name{font-family:var(--serif);font-weight:600;font-size:20px;line-height:1.2;letter-spacing:.01em}
+  .desc{font-size:13.5px;color:var(--muted);margin-top:3px}
+
+  .go{flex:0 0 auto;color:var(--hue);font-size:22px;line-height:1;transform:translateX(0);transition:transform .16s ease}
+  @media (hover:hover){ .tool:hover .go{transform:translateX(4px)} }
+
+  /* 尚未設定連結的空狀態 */
+  .tool.todo{cursor:default;background:#fbfbfa}
+  .tool.todo .name{color:var(--ink-soft)}
+  .tool.todo .desc{color:var(--muted)}
+  .tool.todo .go{display:none}
+  .tool.todo:active{transform:none}
+
+  /* ---------- 主畫面提示 ---------- */
+  .tip{
+    margin-top:28px;padding:16px 18px;border-radius:14px;
+    background:color-mix(in srgb,var(--c-order) 8%,#fff);
+    border:1px solid color-mix(in srgb,var(--c-order) 22%,var(--line));
+    font-size:13.5px;color:var(--ink-soft);
+  }
+  .tip b{color:var(--ink);font-weight:700}
+  .tip .how{margin-top:6px;color:var(--muted);font-size:12.5px}
+
+  footer{margin-top:26px;text-align:center;color:var(--muted);font-size:12px;letter-spacing:.04em}
+
+  /* ---------- 載入動態（尊重減少動態設定） ---------- */
+  @media (prefers-reduced-motion:no-preference){
+    .spectrum{animation:grow .7s .1s cubic-bezier(.2,.7,.2,1) both}
+    .tool{animation:rise .5s cubic-bezier(.2,.7,.2,1) both}
+    .tool:nth-child(1){animation-delay:.14s}
+    .tool:nth-child(2){animation-delay:.22s}
+    .tool:nth-child(3){animation-delay:.30s}
+    @keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+    @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <p class="eyebrow">白光咖啡 · 夥伴工具</p>
+      <h1>白光工具箱</h1>
+      <p class="tagline">一個入口，找到每天要用的系統。</p>
+      <div class="spectrum" aria-hidden="true"></div>
+    </header>
+
+    <nav class="tools" aria-label="系統選單">
+
+      <!-- ①進貨系統：把 href 換成進貨頁網址 -->
+      <a class="tool" style="--hue:var(--c-order)" href="https://whitelightcoffee.github.io/order/">
+        <span class="ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 7.5 12 3l9 4.5v9L12 21 3 16.5z"/><path d="M3 7.5 12 12l9-4.5M12 12v9"/>
+          </svg>
+        </span>
+        <span class="body"><span class="name">進貨系統</span><span class="desc">叫貨、追蹤到貨進度</span></span>
+        <span class="go" aria-hidden="true">→</span>
+      </a>
+
+      <!-- ②調煮系統：把 href 換成調煮頁網址 -->
+      <a class="tool" style="--hue:var(--c-brew)" href="https://whitelightcoffee.github.io/coffee-calibration/">
+        <span class="ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 9h11v4a5 5 0 0 1-5 5H10a5 5 0 0 1-5-5z"/><path d="M16 10h2.5a2.5 2.5 0 0 1 0 5H16"/><path d="M8 3c-.6.8-.6 1.7 0 2.5M11.5 3c-.6.8-.6 1.7 0 2.5"/>
+          </svg>
+        </span>
+        <span class="body"><span class="name">調煮系統</span><span class="desc">咖啡沖煮與參數調校</span></span>
+        <span class="go" aria-hidden="true">→</span>
+      </a>
+
+      <!-- ③物控系統（央廚／烘豆室專用）：把 href 換成物控頁網址 -->
+      <a class="tool" style="--hue:var(--c-stock)" href="https://whitelightcoffee.github.io/erp/">
+        <span class="ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="4" width="16" height="6" rx="1.5"/><rect x="4" y="14" width="16" height="6" rx="1.5"/><path d="M8 7h.01M8 17h.01"/>
+          </svg>
+        </span>
+        <span class="body"><span class="name">物控系統</span><span class="desc">央廚・烘豆室專用：生產排程與訂單</span></span>
+        <span class="go" aria-hidden="true">→</span>
+      </a>
+
+    </nav>
+
+    <div class="tip">
+      <b>把這頁加到手機主畫面</b>，之後一鍵打開，就像 App 一樣。
+      <div class="how">iPhone（Safari）：分享 → 加入主畫面　·　Android（Chrome）：右上選單 → 加到主畫面</div>
+    </div>
+
+    <footer>白光咖啡 White Light Coffee</footer>
+  </div>
+
+<script>
+  // 還沒貼網址的卡片，自動變成「尚未設定」狀態，避免夥伴點到空連結。
+  document.querySelectorAll('.tool').forEach(function(a){
+    var href = a.getAttribute('href') || '';
+    if(href.indexOf('PASTE_') === 0 || href === '' || href === '#'){
+      a.classList.add('todo');
+      a.removeAttribute('href');
+      var desc = a.querySelector('.desc');
+      if(desc) desc.textContent = '尚未設定連結';
+    }
+  });
+</script>
+</body>
+</html>
