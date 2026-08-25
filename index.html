@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <!-- 每次改版：把下面 data-build 換成新的版本字串（例如日期＋序號），存檔部署即可 -->
-<html lang="zh-Hant" data-build="2025-08-25-1">
+<!-- 註：裝了 Service Worker 之後，更新其實已自動處理；這個版本號主要當「畫面上的版本標籤」＋備援用 -->
+<html lang="zh-Hant" data-build="2026-08-25-1">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -26,10 +27,13 @@
     --ink-soft:#4B4D50;
     --muted:#8B8D8A;
     --line:#E6E7E3;
-    /* —— 稜鏡分光：三個工具各自一個色相（暖→冷）—— */
-    --c-order:#E39A2B;   /* 進貨 · 琥珀 */
+    /* —— 稜鏡分光：每個工具各自一個色相 —— */
     --c-brew:#DC5B3B;    /* 調煮 · 烘焙紅 */
-    --c-stock:#1FA98A;   /* 進銷存 · 青綠 */
+    --c-bean:#8C5A34;    /* 咖啡豆品管 · 咖啡棕 */
+    --c-order:#E39A2B;   /* 進貨 · 琥珀 */
+    --c-shift:#4F86C0;   /* 排班 · 藍 */
+    --c-video:#9A5AA6;   /* 影片 · 紫 */
+    --c-stock:#1FA98A;   /* 物控 · 青綠 */
     --serif:"Noto Serif TC",serif;
     --sans:"Noto Sans TC",system-ui,-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;
   }
@@ -51,7 +55,7 @@
   .wrap{width:100%;max-width:480px}
 
   /* ---------- 標頭 ---------- */
-  header{margin-bottom:26px}
+  header{margin-bottom:24px}
   .eyebrow{
     font-size:12px;font-weight:500;letter-spacing:.22em;
     color:var(--muted);text-transform:uppercase;margin:0 0 10px;
@@ -68,8 +72,22 @@
     background:linear-gradient(90deg,var(--c-order) 0%,var(--c-brew) 52%,var(--c-stock) 100%);
   }
 
+  /* ---------- 分類區塊 ---------- */
+  .tools-nav{margin-top:26px}
+  .group + .group{margin-top:26px}
+  .group-title{
+    display:flex;align-items:center;gap:9px;
+    margin:0 0 12px 2px;
+    font-family:var(--sans);font-size:13px;font-weight:700;
+    letter-spacing:.14em;color:var(--ink-soft);
+  }
+  .group-title .dot{
+    width:9px;height:9px;border-radius:99px;flex:0 0 auto;
+    background:var(--gc,var(--muted));
+  }
+
   /* ---------- 工具卡 ---------- */
-  .tools{display:flex;flex-direction:column;gap:14px;margin-top:26px}
+  .tools{display:flex;flex-direction:column;gap:12px}
   .tool{
     --hue:var(--muted);
     display:flex;align-items:center;gap:16px;
@@ -78,7 +96,7 @@
     text-decoration:none;color:inherit;position:relative;overflow:hidden;
     transition:transform .12s ease, box-shadow .18s ease, border-color .18s ease;
   }
-  .tool::before{ /* 左側色脊：三張並排就是一條光譜 */
+  .tool::before{ /* 左側色脊 */
     content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--hue);
   }
   .tool:active{transform:scale(.985)}
@@ -119,7 +137,7 @@
   .tip b{color:var(--ink);font-weight:700}
   .tip .how{margin-top:6px;color:var(--muted);font-size:12.5px}
 
-  /* ---------- 強制更新按鈕 ---------- */
+  /* ---------- 強制更新按鈕（備援用，可留可刪） ---------- */
   .updatebar{margin-top:22px;text-align:center}
   .refresh{
     display:inline-flex;align-items:center;gap:7px;
@@ -151,10 +169,10 @@
   /* ---------- 載入動態（尊重減少動態設定） ---------- */
   @media (prefers-reduced-motion:no-preference){
     .spectrum{animation:grow .7s .1s cubic-bezier(.2,.7,.2,1) both}
-    .tool{animation:rise .5s cubic-bezier(.2,.7,.2,1) both}
-    .tool:nth-child(1){animation-delay:.14s}
-    .tool:nth-child(2){animation-delay:.22s}
-    .tool:nth-child(3){animation-delay:.30s}
+    .group{animation:rise .5s cubic-bezier(.2,.7,.2,1) both}
+    .group:nth-of-type(1){animation-delay:.16s}
+    .group:nth-of-type(2){animation-delay:.26s}
+    .group:nth-of-type(3){animation-delay:.36s}
     @keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
     @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
   }
@@ -169,40 +187,101 @@
       <div class="spectrum" aria-hidden="true"></div>
     </header>
 
-    <nav class="tools" aria-label="系統選單">
+    <nav class="tools-nav" aria-label="系統選單">
 
-      <!-- ①調煮系統：把 href 換成調煮頁網址 -->
-      <a class="tool" style="--hue:var(--c-brew)" href="https://whitelightcoffee.github.io/coffee-calibration/">
-        <span class="ico" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M5 9h11v4a5 5 0 0 1-5 5H10a5 5 0 0 1-5-5z"/><path d="M16 10h2.5a2.5 2.5 0 0 1 0 5H16"/><path d="M8 3c-.6.8-.6 1.7 0 2.5M11.5 3c-.6.8-.6 1.7 0 2.5"/>
-          </svg>
-        </span>
-        <span class="body"><span class="name">調煮系統</span><span class="desc">咖啡沖煮與參數調校</span></span>
-        <span class="go" aria-hidden="true">→</span>
-      </a>
+      <!-- ============ 咖啡 ============ -->
+      <section class="group" style="--gc:var(--c-brew)" aria-label="咖啡">
+        <h2 class="group-title"><span class="dot" aria-hidden="true"></span>咖啡</h2>
+        <div class="tools">
 
-      <!-- ②進貨系統：把 href 換成進貨頁網址 -->
-      <a class="tool" style="--hue:var(--c-order)" href="https://whitelightcoffee.github.io/order/">
-        <span class="ico" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 7.5 12 3l9 4.5v9L12 21 3 16.5z"/><path d="M3 7.5 12 12l9-4.5M12 12v9"/>
-          </svg>
-        </span>
-        <span class="body"><span class="name">進貨系統</span><span class="desc">叫貨、追蹤到貨進度</span></span>
-        <span class="go" aria-hidden="true">→</span>
-      </a>
+          <!-- 調煮系統 -->
+          <a class="tool" style="--hue:var(--c-brew)" href="https://whitelightcoffee.github.io/coffee-calibration/">
+            <span class="ico" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 9h11v4a5 5 0 0 1-5 5H10a5 5 0 0 1-5-5z"/><path d="M16 10h2.5a2.5 2.5 0 0 1 0 5H16"/><path d="M8 3c-.6.8-.6 1.7 0 2.5M11.5 3c-.6.8-.6 1.7 0 2.5"/>
+              </svg>
+            </span>
+            <span class="body"><span class="name">調煮系統</span><span class="desc">咖啡沖煮與參數調校</span></span>
+            <span class="go" aria-hidden="true">→</span>
+          </a>
 
-      <!-- ③物控系統（央廚／烘豆室專用）：把 href 換成物控頁網址 -->
-      <a class="tool" style="--hue:var(--c-stock)" href="https://whitelightcoffee.github.io/erp/">
-        <span class="ico" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="4" y="4" width="16" height="6" rx="1.5"/><rect x="4" y="14" width="16" height="6" rx="1.5"/><path d="M8 7h.01M8 17h.01"/>
-          </svg>
-        </span>
-        <span class="body"><span class="name">物控系統</span><span class="desc">央廚・烘豆室專用：生產排程與訂單</span></span>
-        <span class="go" aria-hidden="true">→</span>
-      </a>
+          <!-- 咖啡豆品管（Google 試算表，新分頁開啟） -->
+          <a class="tool" style="--hue:var(--c-bean)" href="https://docs.google.com/spreadsheets/d/1-8JDeNy-IiqujWMtpmyfUxjdQIniNK9Swj4Qmrl8cE8/edit?usp=sharing" target="_blank" rel="noopener">
+            <span class="ico" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 3.2c3.5 0 6.3 3.9 6.3 8.8s-2.8 8.8-6.3 8.8-6.3-3.9-6.3-8.8S8.5 3.2 12 3.2Z"/>
+                <path d="M9.6 5.4c3 2.4-3 8.4 0 13.2"/>
+              </svg>
+            </span>
+            <span class="body"><span class="name">咖啡豆品管</span><span class="desc">生豆與烘焙品質紀錄</span></span>
+            <span class="go" aria-hidden="true">→</span>
+          </a>
+
+        </div>
+      </section>
+
+      <!-- ============ 營運 ============ -->
+      <section class="group" style="--gc:var(--c-order)" aria-label="營運">
+        <h2 class="group-title"><span class="dot" aria-hidden="true"></span>營運</h2>
+        <div class="tools">
+
+          <!-- 進貨系統 -->
+          <a class="tool" style="--hue:var(--c-order)" href="https://whitelightcoffee.github.io/order/">
+            <span class="ico" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 7.5 12 3l9 4.5v9L12 21 3 16.5z"/><path d="M3 7.5 12 12l9-4.5M12 12v9"/>
+              </svg>
+            </span>
+            <span class="body"><span class="name">進貨系統</span><span class="desc">叫貨、追蹤到貨進度</span></span>
+            <span class="go" aria-hidden="true">→</span>
+          </a>
+
+          <!-- 排班表（Google 試算表，新分頁開啟） -->
+          <a class="tool" style="--hue:var(--c-shift)" href="https://docs.google.com/spreadsheets/d/1C_TMSYDPFZc4NIHaZ05byIccaqzI_9MS9Ypft-mjYOI/edit?usp=sharing" target="_blank" rel="noopener">
+            <span class="ico" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3.5" y="5" width="17" height="15.5" rx="2.4"/>
+                <path d="M3.5 9.5h17M8 3.2v3.4M16 3.2v3.4"/>
+                <path d="M7.6 13h2.2M11 13h2.2M14.4 13h2.2M7.6 16.4h2.2M11 16.4h2.2"/>
+              </svg>
+            </span>
+            <span class="body"><span class="name">排班表</span><span class="desc">各店班表與人力安排</span></span>
+            <span class="go" aria-hidden="true">→</span>
+          </a>
+
+          <!-- YT影片連結（Google 試算表，新分頁開啟） -->
+          <a class="tool" style="--hue:var(--c-video)" href="https://docs.google.com/spreadsheets/d/1bWIY6QInqqlYXR9rY4nYUJ3eQSmeOYY9XhH8lHd7Xzo/edit?gid=1523149864#gid=1523149864" target="_blank" rel="noopener">
+            <span class="ico" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="5.5" width="18" height="13" rx="3.4"/>
+                <path d="M10.3 9.4v5.2l4.4-2.6z" fill="currentColor" stroke="none"/>
+              </svg>
+            </span>
+            <span class="body"><span class="name">YT影片連結</span><span class="desc">教學與參考影片清單</span></span>
+            <span class="go" aria-hidden="true">→</span>
+          </a>
+
+        </div>
+      </section>
+
+      <!-- ============ 中央物控 ============ -->
+      <section class="group" style="--gc:var(--c-stock)" aria-label="中央物控">
+        <h2 class="group-title"><span class="dot" aria-hidden="true"></span>中央物控</h2>
+        <div class="tools">
+
+          <!-- 物控系統（央廚／烘豆室專用） -->
+          <a class="tool" style="--hue:var(--c-stock)" href="https://whitelightcoffee.github.io/erp/">
+            <span class="ico" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="4" y="4" width="16" height="6" rx="1.5"/><rect x="4" y="14" width="16" height="6" rx="1.5"/><path d="M8 7h.01M8 17h.01"/>
+              </svg>
+            </span>
+            <span class="body"><span class="name">物控系統</span><span class="desc">央廚・烘豆室專用：生產排程與訂單</span></span>
+            <span class="go" aria-hidden="true">→</span>
+          </a>
+
+        </div>
+      </section>
 
     </nav>
 
@@ -237,17 +316,32 @@
   });
 </script>
 
-<!-- ===================== 白光 自動更新 ===================== -->
-<!-- 原理：開頁時（以及從主畫面切回前景時）用「不透過快取」的方式抓這頁最新原始碼， -->
-<!-- 比對 <html data-build> 版本，不一樣就自動清掉舊版、重新載入最新版。 -->
-<!-- 你唯一要做的事：每次改版把最上面的 data-build 換成新字串。 -->
+<!-- ============ 白光 自動更新（主力）：Service Worker，一律先連網路 ============ -->
+<!-- 需要在這個 repo 根目錄放一支 sw.js（跟本頁同一層）。 -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' })
+        .then(function (reg) {
+          // 每次從主畫面切回前景，順手檢查 sw.js 有沒有新版
+          document.addEventListener('visibilitychange', function () {
+            if (document.visibilityState === 'visible') reg.update();
+          });
+        })
+        .catch(function () { /* 不支援就算了，還有下面的備援 */ });
+    });
+  }
+</script>
+
+<!-- ============ 白光 自動更新（備援）：比對版本 + 手動按鈕 ============ -->
+<!-- 萬一某裝置沒跑 Service Worker（少數舊 iOS），這段仍會用「不透過快取」的方式 -->
+<!-- 抓最新原始碼，比對 <html data-build>，不一樣就自己重載最新版。 -->
 <script>
 (function () {
   var html  = document.documentElement;
   var BUILD = html.getAttribute('data-build') || '';
   var SELF  = location.pathname; // 這一頁（不含 ?query）
 
-  // 頁腳顯示目前版本，方便現場確認大家是不是同一版
   var tag = document.getElementById('buildTag');
   if (tag) tag.textContent = '版本 ' + (BUILD || '—');
 
@@ -268,11 +362,10 @@
   }
   function hardReload(tagStr){
     try { sessionStorage.setItem('wl_upd', String(Date.now())); } catch (e){}
-    // 換成帶版本參數的網址 → 一定是快取命不中 → 抓到最新的 HTML
     location.replace(SELF + '?v=' + encodeURIComponent(tagStr || Date.now()));
   }
 
-  // 手動：把 Cache Storage、Service Worker 全清掉再重載（給按鈕用）
+  // 手動：把 Cache Storage、Service Worker 全清掉再重載
   window.whiteLightForceUpdate = function(){
     toast('更新中…');
     var jobs = [];
@@ -291,14 +384,13 @@
     });
   };
 
-  // 自動：比對版本，有新版就自己更新
+  // 自動備援：比對版本，有新版就自己更新
   function check(){
-    if (!BUILD) return;                 // 沒設定版本就不自動比對，避免誤判
-    if (!navigator.onLine) return;      // 離線就略過
-    try {                               // 剛自動更新過就先跳過，避免連續重整
+    if (!BUILD) return;
+    if (!navigator.onLine) return;
+    try {
       if (Date.now() - (+sessionStorage.getItem('wl_upd') || 0) < 6000) return;
     } catch (e){}
-
     fetch(bust(SELF), { cache: 'no-store' })
       .then(function(r){ return r.ok ? r.text() : null; })
       .then(function(text){
@@ -309,7 +401,7 @@
           setTimeout(function(){ hardReload(latest); }, 400);
         }
       })
-      .catch(function(){ /* 網路暫時有問題就算了，下次再檢查 */ });
+      .catch(function(){});
   }
 
   check();
@@ -318,6 +410,6 @@
   });
 })();
 </script>
-<!-- =================== 白光 自動更新（結束）=================== -->
+<!-- ================== 白光 自動更新（結束）================== -->
 </body>
 </html>
