@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!-- 每次改版：把下面 data-build 換成新的版本字串（例如日期＋序號），存檔部署即可 -->
 <!-- 註：裝了 Service Worker 之後，更新其實已自動處理；這個版本號主要當「畫面上的版本標籤」＋備援用 -->
-<html lang="zh-Hant" data-build="2026-08-27-1">
+<html lang="zh-Hant" data-build="2026-11-24-1">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -30,6 +30,7 @@
     /* —— 稜鏡分光：每個工具各自一個色相 —— */
     --c-brew:#DC5B3B;    /* 調煮 · 烘焙紅 */
     --c-bean:#8C5A34;    /* 咖啡豆品管 · 咖啡棕 */
+    --c-green:#7A8B2A;   /* 生豆庫存 · 橄欖綠 */
     --c-order:#E39A2B;   /* 進貨 · 琥珀 */
     --c-shift:#4F86C0;   /* 排班 · 藍 */
     --c-video:#9A5AA6;   /* 影片 · 紫 */
@@ -215,6 +216,19 @@
               </svg>
             </span>
             <span class="body"><span class="name">咖啡豆品管</span><span class="desc">生豆與烘焙品質紀錄</span></span>
+            <span class="go" aria-hidden="true">→</span>
+          </a>
+
+          <!-- 生豆庫存（手機查詢／登打，寫回生豆 List 試算表） -->
+          <a class="tool" style="--hue:var(--c-green)" href="https://whitelightcoffee.github.io/green-beans/">
+            <span class="ico" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 8.5 12 4l8 4.5v8L12 21l-8-4.5z"/>
+                <path d="M10.2 10.2c1.6-1.3 3.9-.6 4.2 1.4.3 2-1.6 3.9-3.6 3.4-1.4-.4-1.9-1.8-1.3-3"/>
+                <path d="M11.3 10.6c.9 1.1-.4 2.8.5 4"/>
+              </svg>
+            </span>
+            <span class="body"><span class="name">生豆庫存</span><span class="desc">查生豆資料、更新庫存與新增</span></span>
             <span class="go" aria-hidden="true">→</span>
           </a>
 
